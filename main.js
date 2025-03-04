@@ -64,11 +64,41 @@ if (currentStep) {
     
   }
 
-  if(currentIndex === 2 && formDetails.plan && formDetails.plan.billing === "yearly") {
-      let addonCharges = document.querySelectorAll('.add-on-charge');
-        addonCharges.forEach((charge) => {
-          charge.textContent = `+$${charge.getAttribute("charge-yearly")}/yr`;
-        })
+  if(currentIndex === 2) {
+    if(formDetails.plan) {
+      let planElements = document.querySelectorAll(".plan");
+      planElements.forEach((plan) => {
+          let planType = plan.querySelector(".billing").textContent.trim();
+          
+          if (planType === formDetails.plan.type) {
+              plan.style.border = "3px solid hsl(243, 100%, 62%)";
+              plan.dataset.selected = "true";
+          } else {
+              plan.style.border = "1px solid gray";
+              plan.dataset.selected = "false";
+          }
+      });
+  }
+  }
+
+  if(currentIndex === 2) {
+
+   updateAddonPrices();
+    
+        document.querySelectorAll(".add-on").forEach((addOn) => {
+          let addOnName = addOn.querySelector(".addon-name").textContent.trim();
+          let checkbox = addOn.querySelector("input[type='checkbox']");
+      
+          if (formDetails.addOns.some((selected) => selected.name === addOnName)) {
+            addOn.style.border = "3px solid hsl(243, 100%, 62%)";
+            addOn.dataset.selected = "true";
+            checkbox.checked = true;
+          } else {
+            addOn.style.border = "1px solid gray";
+            addOn.dataset.selected = "false";
+            checkbox.checked = false;
+          }
+        });
   }
 
 
@@ -83,7 +113,7 @@ if (currentStep) {
     let changePlan = document.getElementById('changePlan');
     changePlan.addEventListener('click', () => {
       currentIndex = 1;
-      nextButton.textContent = 'Next';
+      nextButton.textContent = 'Next Step';
       nextButton.style.backgroundColor = "hsl(213, 96%, 18%)";
       showUI();
     });
@@ -93,6 +123,7 @@ if (currentStep) {
     })
    }
   }
+  
   else {
     steps[currentIndex]();
   }
@@ -268,6 +299,28 @@ function renderThankYouPage() {
 
 }
 
+function updateAddonPrices() {
+  let isYearly = formDetails.plan.billing === "yearly";
+  let priceAttribute = isYearly ? "charge-yearly" : "charge-monthly";
+  let priceSuffix = isYearly ? "yr" : "mo";
+
+  document.querySelectorAll('.add-on-charge').forEach((charge) => {
+      charge.textContent = `+$${charge.getAttribute(priceAttribute)}/${priceSuffix}`;
+  });
+
+  if (formDetails.addOns.length > 0) {
+      document.querySelectorAll(".add-on").forEach((addonElement) => {
+          let addonName = addonElement.querySelector(".addon-name").textContent.trim();
+          let matchingAddOn = formDetails.addOns.find(addOn => addOn.name === addonName);
+          
+          if (matchingAddOn) {
+              matchingAddOn.price = addonElement.querySelector(`.add-on-charge`).getAttribute(priceAttribute);
+          }
+      });
+  }
+}
+
+
 function updateSummaryPage() {
 
   let summaryPage = document.querySelector('.summaryPage');
@@ -285,7 +338,6 @@ function updateSummaryPage() {
     mainHeader.textContent = `${planName} (${planBillingText})`;
     summaryCharge.textContent = `$${totalBill}/${billingType === "yearly" ? "yr" : "mo"}`;
 
-    // Clear previous add-ons and total summary
     let addonContainer = document.createElement('div');
     let summaryTotal = document.createElement('div');
 
@@ -433,7 +485,6 @@ document.addEventListener("click", function (event) {
 });
 
 
-// Store selected add-ons
 
 // Selecting Add-ons
 document.addEventListener("click", function (event) {
