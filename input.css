@@ -1,0 +1,25 @@
+@import "tailwindcss";
+.circle {
+    @apply h-8 w-8 mt-1 border border-white rounded-full flex justify-center items-center text-white font-bold 
+  }
+  .stepInfo {
+    @apply pl-4
+  }
+  .stepNumber {
+    @apply text-gray-400 font-semibold
+  }
+  li {
+    @apply list-none flex pl-6 pr-16 py-3;
+}
+.stepDescription {
+    @apply text-white font-bold 
+}
+#next-btn {
+  background-color: hsl(213, 96%, 18%);
+}
+.add-on-charge{
+  color: hsl(243, 100%, 62%);
+}
+#summaryCharge {
+     font-weight: 800;
+}
